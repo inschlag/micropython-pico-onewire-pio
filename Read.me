@@ -8,7 +8,7 @@ This library is a port of the [pico-onewire](https://github.com/mjcross/pico-one
 
 * **Precision Timing:** Utilizes PIO assembly to guarantee microsecond-accurate time slots (1µs resolution), independent of CPU load or Python Garbage Collection.
 * **RP2350 Compatible:** Works seamlessly on both Raspberry Pi Pico (RP2040) and Pico 2 (RP2350).
-* **Robust Reset:** Includes a specific fix for the PIO 5-bit value limit to ensure a standard-compliant Reset Pulse (>480µs).
+* **Robust Reset:**  Reset Pulse (>480µs).
 * **FIFO Synchronization:** Implements strict lock-step synchronization between Python and PIO to prevent FIFO overflows during `write` operations.
 * **CRC-8 Support:** Built-in helper for CRC checks to ensure data integrity over longer cable runs.
 * **Safe Initialization:** Configures pins as `INPUT PULLUP` on startup to prevent blocking the bus.
@@ -82,4 +82,5 @@ while True:
                     print(f"Temp: {temp_raw / 16.0:.2f} °C")
                 else:
                     print("CRC Error")
+
     time.sleep(2)
