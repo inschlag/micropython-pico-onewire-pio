@@ -1,6 +1,6 @@
 from machine import Pin
 import time
-import onewire_lib
+import onewire_pio_lib
 
 # Konfiguration
 # GPIO 15: Data Pin
@@ -11,7 +11,7 @@ def main():
     print("=== Start 1-Wire Demo (MicroPython PIO) ===")
     
     try:
-        ow = onewire_lib.OneWire(PIN_NUM)
+        ow = onewire_pio_lib.OneWire(PIN_NUM)
     except Exception as e:
         print(f"Initialisierungsfehler: {e}")
         return
@@ -92,7 +92,7 @@ def main():
         except Exception as e:
             print(f"Fehler in Schleife: {e}")
             # Versuch der Re-Initialisierung
-            ow = onewire_lib.OneWire(PIN_NUM)
+            ow = onewire_pio_lib.OneWire(PIN_NUM)
 
         print("-" * 40)
         time.sleep(2)
