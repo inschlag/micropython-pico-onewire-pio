@@ -2,7 +2,7 @@
 
 A robust, high-precision 1-Wire driver for MicroPython on the Raspberry Pi Pico, implemented using the **PIO (Programmable I/O)** state machines.
 
-This library is a port of the [pico-onewire](https://github.com/mjcross/pico-onewire) C library by mjcross, adapted and optimized for MicroPython. It solves common timing issues associated with bit-banging 1-Wire in Python by offloading the critical timing to the PIO hardware.
+This library is a port of the pio onewire from [onewire](https://github.com/raspberrypi/pico-examples/tree/master/pio/onewire)  adapted and optimized for MicroPython. It solves common timing issues associated with bit-banging 1-Wire in Python by offloading the critical timing to the PIO hardware.
 
 ## Features
 
