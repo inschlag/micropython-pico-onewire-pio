@@ -41,45 +41,45 @@ This library is a port of the pio onewire from [onewire](https://github.com/rasp
 
 ```python
 import time
-from onewire_lib import OneWire
+from onewire_pio_lib import OneWire
+from ds18b20 import DS18B20
 
-# Initialize on GPIO 15
-ow = OneWire(pin_num=15)
+# Konfiguration
+PIN_NUM = 17  # GPIO 15 (mit 4.7k Pull-Up!)
 
-# 1. Search for ROMs
-roms = ow.rom_search()
-print(f"Found {len(roms)} devices")
-
-# 2. Loop to read temperature
-while True:
-    if ow.reset():
-        ow.write_byte(ow.SKIP_ROM)      # Address all devices
-        ow.write_byte(ow.CONVERT_T)     # Start temperature conversion
-        
-        # Wait for conversion (DS18B20 pulls line low while busy)
-        time.sleep(0.75) 
-        
-        for rom in roms:
-            if ow.reset():
-                ow.write_byte(ow.MATCH_ROM)
-                # Send 64-bit ROM code
-                for b in range(8):
-                    ow.write_byte((rom >> (b * 8)) & 0xFF)
-                
-                ow.write_byte(ow.READ_SCRATCHPAD)
-                
-                # Read 9 Bytes (Data + CRC)
-                data = bytearray(9)
-                for i in range(9):
-                    data[i] = ow.read_byte()
-                
-                # Check CRC
-                if ow.crc8(data) == 0:
-                    temp_raw = (data[1] << 8) | data[0]
-                    # Handle negative numbers
-                    if temp_raw & 0x8000:
-                        temp_raw = -((temp_raw ^ 0xFFFF) + 1)
-                    print(f"Temp: {temp_raw / 16.0:.2f} °C")
+def main():
+    print("Start DS18B20 System...")
+    
+    # 1. Objekte anlegen
+    ow = OneWire(PIN_NUM)
+    sensor_mgr = DS18B20(ow)
+    
+    # 2. Einmalig scannen
+    print("Scanne Bus...")
+    found = sensor_mgr.scan()
+    print(f"{len(found)} Sensoren gefunden.")
+    
+    # 3. Periodisch abfragen
+    while True:
+        try:
+            print("Messe...")
+            # Diese Methode kümmert sich um alles (Convert, Wait, CRC)
+            readings = sensor_mgr.read_temperatures()
+            
+            for rom_id, temp in readings:
+                if temp is not None:
+                    print(f"  ID: {rom_id} -> {temp:.2f} °C")
                 else:
-                    print("CRC Error")
-    time.sleep(2)
+                    print(f"  ID: {rom_id} -> CRC Fehler!")
+            
+            print("-" * 30)
+            
+        except Exception as e:
+            print(f"Fehler: {e}")
+            # Bei groben Fehlern (z.B. Kabelbruch) ggf. neu scannen
+            # sensor_mgr.scan() 
+        
+        time.sleep(2)
+
+if __name__ == "__main__":
+    main()
